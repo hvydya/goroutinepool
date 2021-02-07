@@ -18,6 +18,7 @@ type BlockingQueue interface {
 	Remove()
 	Peek()
 	Size()
+	Capacity()
 }
 
 // Insert inserts the item into the queue
@@ -52,7 +53,7 @@ func (q *Queue) Peek() interface{} {
 	defer q.mu.Unlock()
 	qlen := len(q.q)
 	if qlen > 0 {
-		return q.q[qlen-1]
+		return q.q[0]
 	}
 	return nil
 }
@@ -62,4 +63,17 @@ func (q *Queue) Size() int {
 	q.mu.Lock()
 	defer q.mu.Unlock()
 	return len(q.q)
+}
+
+// Capacity returns the capacity of the queue
+func (q *Queue) Capacity() int {
+	return q.capacity
+}
+
+// CreateQueue creates an empty queue with desired capacity
+func CreateQueue(capacity int) *Queue {
+	return &Queue{
+		capacity: capacity,
+		q:        make([]interface{}, 0, capacity),
+	}
 }
