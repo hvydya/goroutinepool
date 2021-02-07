@@ -29,33 +29,42 @@ func (q *Queue) Insert(item interface{}) error {
 		q.q = append(q.q, item)
 		return nil
 	}
-	return &QInsertError{
+	return &QueueError{
 		time.Now(),
 		"Queue at max capacity",
+		"Insert",
 	}
 }
 
 // Remove removes the oldest element from the queue
-func (q *Queue) Remove() interface{} {
+func (q *Queue) Remove() (interface{}, error) {
 	q.mu.Lock()
 	defer q.mu.Unlock()
 	if len(q.q) > 0 {
 		item := q.q[0]
 		q.q = q.q[1:]
-		return item
+		return item, nil
 	}
-	return nil
+	return nil, &QueueError{
+		time.Now(),
+		"Queue is empty",
+		"Remove",
+	}
 }
 
 // Peek returns the oldest element without removing from the queue
-func (q *Queue) Peek() interface{} {
+func (q *Queue) Peek() (interface{}, error) {
 	q.mu.Lock()
 	defer q.mu.Unlock()
 	qlen := len(q.q)
 	if qlen > 0 {
-		return q.q[0]
+		return q.q[0], nil
 	}
-	return nil
+	return nil, &QueueError{
+		time.Now(),
+		"Queue is empty",
+		"Peek",
+	}
 }
 
 // Size returns the current size of the queue

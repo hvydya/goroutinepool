@@ -5,12 +5,13 @@ import (
 	"time"
 )
 
-// QInsertError is thrown when Insert is called on the Queue and some error occurs
-type QInsertError struct {
+// QueueError is thrown when any queue function and some error occurs
+type QueueError struct {
 	When time.Time
 	What string
+	Func string
 }
 
-func (e *QInsertError) Error() string {
-	return fmt.Sprintf("at %v, %s", e.When, e.What)
+func (e *QueueError) Error() string {
+	return fmt.Sprintf("at %v, due to %s in %s", e.When, e.What, e.Func)
 }
