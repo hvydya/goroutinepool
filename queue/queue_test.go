@@ -1,4 +1,4 @@
-package goroutinepool
+package queue
 
 import (
 	"fmt"
