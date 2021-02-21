@@ -30,7 +30,7 @@ func TestCapacity(t *testing.T) {
 
 func TestSizeNoConcurrency(t *testing.T) {
 	capacity := 5
-	q := CreateQueue(capacity)
+	q := CreateQueue(capacity).(*TSQueue)
 	testItems := []interface{}{1, 2, 3, 4, 5}
 	arr := make([]interface{}, 0, capacity)
 	for _, v := range testItems {
@@ -44,7 +44,7 @@ func TestSizeNoConcurrency(t *testing.T) {
 
 func TestInsertNoConcurrency(t *testing.T) {
 	capacity := 5
-	q := CreateQueue(capacity)
+	q := CreateQueue(capacity).(*TSQueue)
 	testItems := []interface{}{1, 2, 3, 4, 5}
 	arr := make([]interface{}, 0, capacity)
 	for _, v := range testItems {
@@ -96,7 +96,7 @@ func TestRemoveErrorNoConcurrency(t *testing.T) {
 
 func TestPeekNoConcurrency(t *testing.T) {
 	capacity := 5
-	q := CreateQueue(capacity)
+	q := CreateQueue(capacity).(*TSQueue)
 	testItems := []interface{}{1, 2, 3, 4, 5}
 	for _, v := range testItems {
 		q.Insert(v)
@@ -124,7 +124,7 @@ func TestQueueError(t *testing.T) {
 	funcStr := "TestQueueError"
 	msg := fmt.Sprintf("at %v, due to %s in %s", now, errorMsg, funcStr)
 
-	err := &QueueError{
+	err := &Error{
 		now,
 		errorMsg,
 		funcStr,

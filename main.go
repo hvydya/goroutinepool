@@ -1,7 +1,6 @@
 package main
 
 import (
-	"fmt"
 	"os"
 	"sync"
 	"time"
@@ -26,10 +25,11 @@ func sample() {
 }
 
 func main() {
-	pool := grpool.CreateFixedPool(2)
-	for i := 0; i < 10; i++ {
+	pool := grpool.CreateExecutor(5, 1000)
+	for i := 0; i < 20; i++ {
 		pool.Submit(sample)
 	}
-	time.Sleep(5 * time.Second)
-	fmt.Printf("size: %d\n", pool.TaskQueue.Size())
+	time.Sleep(7 * time.Second)
+	pool.Shutdown()
+	// fmt.Printf("size: %d\n", pool.TaskQueue.Size())
 }

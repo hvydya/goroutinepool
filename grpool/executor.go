@@ -25,7 +25,7 @@ func (e *ExecutorError) Error() string {
 // BasicExecutor is a generic exeutor
 type BasicExecutor struct {
 	mu        sync.Mutex
-	TaskQueue *queue.Queue
+	TaskQueue queue.Queue
 	poolSize  int
 	Running   *counter.AtomicCounter
 	shutdown  context.CancelFunc
@@ -36,8 +36,8 @@ type Task func()
 
 // Executor is a generic interface of a goroutinepool
 type Executor interface {
-	Submit(task Task) error
-	start(ctx *context.Context)
+	Submit(Task) error
+	start(*context.Context)
 	Shutdown()
 }
 
@@ -49,10 +49,10 @@ func (exe *BasicExecutor) Submit(task Task) error {
 	return nil
 }
 
-func (exe *BasicExecutor) start(ctx context.Context) {
+func (exe *BasicExecutor) start(ctx *context.Context) {
 	for {
 		select {
-		case <-ctx.Done():
+		case <-(*ctx).Done():
 			return
 		default:
 			if exe.TaskQueue.Size() > 0 && exe.Running.Get() < uint64(exe.poolSize) {
@@ -89,13 +89,16 @@ func (exe *BasicExecutor) Shutdown() {
 }
 
 // CreateExecutor creates a goroutinepool
-func CreateExecutor(poolSize, queueCapacity int) *BasicExecutor {
+func CreateExecutor(poolSize, queueCapacity int) Executor {
 	queue := queue.CreateQueue(queueCapacity)
-	executor := &BasicExecutor{
+	context, cancel := context.WithCancel(context.Background())
+	var executor Executor = &BasicExecutor{
 		TaskQueue: queue,
 		poolSize:  poolSize,
 		Running:   counter.CreateAtomicCounter(),
+		shutdown:  cancel,
 	}
+	go executor.start(&context)
 	return executor
 }
 
@@ -111,6 +114,6 @@ func CreateFixedPool(poolSize int) *BasicExecutor {
 		Running:   counter.CreateAtomicCounter(),
 	}
 	executor.shutdown = cancel
-	go executor.start(context)
+	go executor.start(&context)
 	return executor
 }

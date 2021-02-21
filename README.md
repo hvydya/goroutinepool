@@ -19,6 +19,11 @@ func main() {
 }
 ```
 
+### TODOS
+- More tests
+- More methods for the interfaces
+- Shutdown must kill all dangling or running go routines when it is called (critical).
+
 ### Check coverage
 ```shell
 go test -coverprofile cp.out && go tool cover -html cp.out
